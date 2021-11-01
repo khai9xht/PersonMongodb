@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
   float *xb = new float[nb * dim];
   float *xq = new float[dim * nq];
   for (int i = 0; i < data.size(); i++) {
-    xb[i] = (float)data[i];
+    xb[i] = static_cast<float>(data[i]);
   }
   for (int i = nb_1; i < nb; i++) {
     for (int j = 0; j > dim; j++) {

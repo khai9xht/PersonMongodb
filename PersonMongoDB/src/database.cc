@@ -8,6 +8,8 @@
 #include <iostream>
 #include <string>
 
+#include "bsoncxx/array/element.hpp"
+#include "bsoncxx/array/view.hpp"
 #include "bsoncxx/builder/basic/array.hpp"
 #include "bsoncxx/builder/basic/document.hpp"
 #include "bsoncxx/builder/basic/kvp.hpp"
@@ -137,14 +139,27 @@ Status Database::SellectAllVectors(std::vector<EmbeddingVector> &embeddingvector
   mongocxx::cursor cursor = PersonDB["person"].find({});
   for (auto doc : cursor){
     bsoncxx::document::element faces = doc["faces"];
-    auto length = faces.length();
+    int length = faces.length();
     for(int i = 0; i < length; i++){
-      auto face = faces[i];
-      auto vectors = face["vectors"];
+      bsoncxx::array::element face = faces[i];
+      bsoncxx::document::element vectors = face["vectors"];
       for(int j = 0; j < vectors.length(); j++){
-        auto vector = vectors[j];
-        auto embed_vector = vector["value"];
-        
+        bsoncxx::array::element vector = vectors[j];
+
+        bsoncxx::document::element eng_element = vector["engine"];
+        std::string eng = eng_element.get_string().value.to_string();
+        if(eng == engine){
+          bsoncxx::array::view embed_vector = vector["value"].get_array();
+          bsoncxx::array::view::const_iterator it = embed_vector.begin();
+          std::vector<double> value;
+          while (it != embed_vector.end()) {
+            double x = (*it).get_double().value;
+            value.push_back(x);
+            it++;
+          }
+          embeddingvectors.push_back(EmbeddingVector(engine, value));
+        }
+
       }
     }
   }
