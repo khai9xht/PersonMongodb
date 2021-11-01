@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.20)
+project(mongodb VERSION 1.0 LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 11)
+set(CPLUS_INCLUDE_PATH "/usr/local/cuda-11.1/targets/x86_64-linux")
+add_subdirectory(PersonMongoDB)
+add_subdirectory(test)

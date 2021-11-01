@@ -1,0 +1,29 @@
+set(MODULE_NAME persondb) 
+file(GLOB HEADER_LIST "$${CMAKE_CURRENT_SOURCE_DIR}/include/${MODULE_NAME}/*.h")
+file(GLOB SOURCE_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cc")
+
+find_package(libmongocxx REQUIRED)
+list(APPEND INCLUDE_DIRS ${LIBMONGOCXX_INCLUDE_DIRS})
+list(APPEND DEPS ${LIBMONGOCXX_LIBRARIES})
+
+find_package(libbsoncxx REQUIRED)
+list(APPEND INCLUDE_DIRS ${LIBBSONCXX_INCLUDE_DIRS})
+list(APPEND DEPS ${LIBBSONCXX_LIBRARIES})
+
+find_package(OpenCV REQUIRED)
+list(APPEND INCLUDE_DIRS ${OpenCV_INCLUDE_DIRS})
+list(APPEND DEPS ${OPENCV_LIBRARIES}	)
+
+find_package(yaml-cpp REQUIRED)
+list(APPEND DEPS yaml-cpp)
+
+add_library(${MODULE_NAME} ${HEADER_LIST} ${SOURCE_LIST})
+target_include_directories(${MODULE_NAME}
+	PUBLIC
+		"${CMAKE_CURRENT_SOURCE_DIR}/include"
+		"${INCLUDE_DIRS}"
+	PRIVATE
+		"${CMAKE_CURRENT_SOURCE_DIR}/src"
+)
+target_compile_features(${MODULE_NAME} PUBLIC cxx_std_20)
+target_link_libraries(${MODULE_NAME} PUBLIC ${DEPS})
