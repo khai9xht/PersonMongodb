@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 
+#include "bsoncxx/json.hpp"
 #include "mongocxx/cursor.hpp"
 #include "persondb/database.h"
 
@@ -10,10 +11,16 @@ int main(int argc, char *argv[]) {
   std::string uri = "mongodb://192.168.50.17:9876";
   auto persondb = Database();
   persondb.Initialize(uri);
-	// Select all vector from DB
+  // Select all vector from DB
   std::vector<EmbeddingVector> EmbeddingVectors;
   std::string engine = "ArcFace";
   persondb.SellectAllVectors(EmbeddingVectors, engine);
+  auto e_it = EmbeddingVectors.begin();
+  while (e_it != EmbeddingVectors.end()) {
+    std::cout << "EmbeddingVectors: " << bsoncxx::to_json(e_it->getSubDoc())
+              << std::endl;
+		e_it++;
+	}
   // convert all vector from std::vector<EmbeddingVector> to float* (input of faiss)
   int length = EmbeddingVectors.size();
 	std::vector<double> EmbedVectorArray; 
